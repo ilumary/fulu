@@ -1,0 +1,21 @@
+collection_name = "Various Vegan Recipes"
+
+[[recipes]]
+name = "Waffles"
+minutes = 30
+description = "Very Tasty Waffles"
+
+[recipes.ingredients]
+Milk = "300ml"
+Eggs = "2"
+Flour = "200g"
+
+[[recipes]]
+name = "Gin Tonic"
+minutes = 30
+description = "Strong Alcohol"
+
+[recipes.ingredients]
+Grapefruit = "2 sclices"
+Tonic = "2cl"
+Gin = "2cl"
