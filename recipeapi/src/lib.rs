@@ -2,6 +2,9 @@ use serde::{Serialize, Deserialize};
 use std::io::prelude::*;
 use std::fs::OpenOptions;
 
+//Maybe implement photos for each recipe
+//possibility to bundle them together in zip file with collection file
+
 #[derive(Deserialize, Serialize)]
 pub struct RecipeCollection {
     collection_name: String,
@@ -17,17 +20,18 @@ pub struct Recipe {
 }
 
 impl RecipeCollection {
+    pub fn recipes(&self) -> &Vec<Recipe> { &self.recipes }
+
+    //TODO check if recipe already exists
     pub fn add_recipe(&mut self, recipe: Recipe) {
         self.recipes.push(recipe);
     }
 
-    pub fn get_specific_recipe_of_collection(collection: RecipeCollection, name: &str) -> Option<Recipe> {
-        for r in collection.recipes {
-            if r.recipe_name.eq(name) {
-                return Some(r);
-            }
+    pub fn search_recipe(&self, name: &str) -> Option<&Recipe> {
+        match self.recipes.iter().position(|r| r.name().eq(name)) {
+            None => return None,
+            Some(x) => return Some(&self.recipes[x]),
         }
-        None
     }
 
     pub fn delete_recipe(&mut self, recipe: Recipe) {
