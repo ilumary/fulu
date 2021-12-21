@@ -29,7 +29,7 @@ Fulu uses a number of Rust Crates to enhance your experience:
 
 Fulu Requires a working Rust compiler. I use version 1.57 of [Rustc](https://nodejs.org/).
 
-Clone the repository and type following command inside the folder:
+Clone the repository and type the following command inside the folder:
 ```sh
 cargo run
 ```
