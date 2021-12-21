@@ -27,9 +27,9 @@ Fulu uses a number of Rust Crates to enhance your experience:
 
 ## Installation
 
-Fulu Requires a working Rust compiler. I use version 1.57 [Rustc](https://nodejs.org/).
+Fulu Requires a working Rust compiler. I use version 1.57 of [Rustc](https://nodejs.org/).
 
-Clone the repository and type following command:
+Clone the repository and type following command inside the folder:
 ```sh
 cargo run
 ```
