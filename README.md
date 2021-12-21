@@ -1,9 +1,9 @@
 # Fulu
-## _Best Recipe Manger, Ever_
+## _Best Recipe Manager, Ever_
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=main)](https://travis-ci.org/joemccann/dillinger)
 
-Fulu is a Recipe Manger which intends to replace that old and crammed Book from your Grandma. It is purely written in Rust.
+Fulu is a Recipe Manager which intends to replace that old and crammed Book from your Grandma. It is purely written in Rust.
 
 ## Features (as of now)
 
