@@ -46,8 +46,6 @@ Also I want to beat my little brother in a contest about who programs the better
 
 You are free to do with my code whatever you want
 
-[//]:
-
-   [egui]: <https://github.com/joemccann/dillinger>
-   [rfd]: <https://github.com/joemccann/dillinger.git>
-   [recipeapi]: <https://github.com/ilumary/fulu/tree/main/recipeapi>
+[egui]: <https://github.com/joemccann/dillinger>
+[rfd]: <https://github.com/joemccann/dillinger.git>
+[recipeapi]: <https://github.com/ilumary/fulu/tree/main/recipeapi>
