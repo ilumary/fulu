@@ -2,8 +2,7 @@ mod ui;
 
 use eframe::{
     egui::{
-        CentralPanel, CtxRef, Hyperlink, ScrollArea, TextStyle, TopBottomPanel,
-        Vec2, SidePanel, Layout, Align,
+        CentralPanel, ScrollArea, Vec2, SidePanel,
     },
     epi::App,
     run_native, NativeOptions,
@@ -32,42 +31,27 @@ impl App for CardData {
 
         self.render_top_panel(ctx);
         CentralPanel::default().show(ctx, |ui| {
-            //render_header(ui);
             ui.vertical_centered(|ui| {
-                SidePanel::left("my_left_panel").resizable(false).show(ctx, |ui| {
-                    ui.label("Hello World!");
+                SidePanel::left("Collection overview panel").resizable(false).min_width(280.).show(ctx, |ui| {
+                    ScrollArea::vertical().show(ui, |ui| {
+                        self.render_recipe_cards(ui);
+                    });
                  });
-                ScrollArea::vertical().show(ui, |ui| {
-                    self.render_recipe_cards(ui);
-                });
-                
+                 CentralPanel::default().show(ctx, |ui| { 
+                    ui.vertical_centered(|ui| { 
+                        ScrollArea::vertical().show(ui, |ui| {
+                            self.render_detail_view(ui);
+                        });
+                    });
+                 });
             });
         });
-        render_footer(ctx);
+        self.render_footer(ctx);
     }
 
     fn name(&self) -> &str{
         "Rezepthandler"
     }
-}
-
-pub(crate) fn render_footer(ctx: &CtxRef) {
-    TopBottomPanel::bottom("footer").show(ctx, |ui| {
-        ui.with_layout(Layout::bottom_up(Align::Center) ,|ui| {
-            ui.add_space(10.);
-            ui.add(
-                Hyperlink::new("https://github.com/ilumary")
-                    .text("github/ilumary")
-                    .text_style(TextStyle::Monospace),
-            );
-            ui.add(
-                Hyperlink::new("https://github.com/emilk/egui")
-                    .text("Made with egui")
-                    .text_style(TextStyle::Monospace),
-            );
-            ui.add_space(10.);
-        })
-    });
 }
 
 fn main() {
