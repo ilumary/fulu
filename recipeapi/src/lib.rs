@@ -22,6 +22,13 @@ pub struct Recipe {
 impl RecipeCollection {
     pub fn recipes(&self) -> &Vec<Recipe> { &self.recipes }
 
+    pub fn is_empty(&self) -> bool{
+        if self.recipes.len() < 1 {
+            return true
+        }
+        false
+    }
+
     //TODO check if recipe already exists
     pub fn add_recipe(&mut self, recipe: Recipe) {
         self.recipes.push(recipe);
