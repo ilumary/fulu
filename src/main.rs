@@ -10,8 +10,12 @@ use eframe::{
 use ui::CardData;
 
 impl App for CardData {
+    fn setup(&mut self, ctx: &eframe::egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>, _storage: Option<&dyn eframe::epi::Storage>) {
+        
+    }
+
     fn update(&mut self, ctx: &eframe::egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>) {
-        ctx.request_repaint();
+        //ctx.request_repaint();
 
         loop {
             match self.message_channel.1.try_recv() {

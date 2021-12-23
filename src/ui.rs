@@ -39,11 +39,10 @@ impl CardData {
 
     pub fn render_recipe_cards(&self, ui: &mut eframe::egui::Ui) {
         for a in self.current_collection.recipes() {
-            //TODO check for current recipe and if None render info text
             ui.add_space(PADDING);
             ui.with_layout(Layout::top_down(egui::Align::Min), |ui| {
                 let title = format!("{}", a.name()); 
-                ui.colored_label(WHITE, title)
+                ui.colored_label(WHITE, title);
             });
             // Show Button
             ui.with_layout(Layout::top_down(egui::Align::Max), |ui| {
@@ -52,18 +51,30 @@ impl CardData {
             ui.add_space(PADDING);
             ui.add(Separator::default());
         }
+
+        if self.current_collection.is_empty() {
+            ui.add_space(PADDING * 2.);
+            ui.colored_label(WHITE, "Start by importing collection");
+            ui.add_space(PADDING);
+            ui.add(Separator::default());
+        }
+
         ui.add_space(PADDING);
         //Add, Edit, Delete current Recipe Button 
         ui.vertical_centered( |ui| {
             ui.with_layout(Layout::top_down(egui::Align::Min), |ui| {
-                let _add_btn = ui.add(Button::new("ADD").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
-                let _edit_btn = ui.add(Button::new("EDIT").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
-                let _delete_btn = ui.add(Button::new("DELETE").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
+                let add_btn = ui.add(Button::new("ADD").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
+                let edit_btn = ui.add(Button::new("EDIT").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
+                let delete_btn = ui.add(Button::new("DELETE").text_style(egui::TextStyle::Button).text_color(Color32::from_rgb(0, 190, 220)));
+
+                if add_btn.clicked() { self.action_add_btn(); }
+                if edit_btn.clicked() { self.action_edit_btn(); }
+                if delete_btn.clicked() { self.action_delete_btn(); }
             });
         });
     }
 
-    pub(crate) fn render_top_panel(&self, ctx: &CtxRef) {
+    pub(crate) fn render_top_panel(&mut self, ctx: &CtxRef) {
         // define a TopBottomPanel widget
         TopBottomPanel::top("top_panel").show(ctx, |ui| {
             ui.add_space(10.);
@@ -74,47 +85,16 @@ impl CardData {
                 });
                 // controls
                 ui.with_layout(Layout::right_to_left(), |ui| {
-                    let _close_btn = ui.add(Button::new("❌").text_style(egui::TextStyle::Body));
-                    let _refresh_btn = ui.add(Button::new("🔄").text_style(egui::TextStyle::Body));
+                    let close_btn = ui.add(Button::new("❌").text_style(egui::TextStyle::Body));
+                    //refactor refresh to "create" to create new collection
+                    let refresh_btn = ui.add(Button::new("🔄").text_style(egui::TextStyle::Body));
                     let save_btn = ui.add(Button::new("💾").text_style(egui::TextStyle::Body));
                     let load_btn = ui.add(Button::new("📁").text_style(egui::TextStyle::Body));
                     
-                    if load_btn.clicked() {
-                        let task = rfd::AsyncFileDialog::new()
-                            .add_filter("Toml Files", &["toml"])
-                            .set_directory("~")
-                            .pick_file();
-        
-                        let message_sender = self.message_channel.0.clone();
-        
-                        execute(async move {
-                            let file = task.await;
-        
-                            if let Some(file) = file {
-                                let file_path = file.path().to_path_buf();
-                                message_sender.send(Message::OpenFileDialog(file_path)).ok();
-                            }
-                        });
-        
-                    }
-
-                    if save_btn.clicked() {
-                        let task = rfd::AsyncFileDialog::new()
-                            .set_directory("~")
-                            .save_file();
-        
-                        let message_sender = self.message_channel.0.clone();
-        
-                        execute(async move {
-                            let file = task.await;
-        
-                            if let Some(file) = file {
-                                let file_path = file.path().to_path_buf();
-                                message_sender.send(Message::SaveFileDialog(file_path)).ok();
-                            }
-                        });
-        
-                    }
+                    if close_btn.clicked() { self.action_close_btn(); }
+                    if refresh_btn.clicked() { self.action_refresh_btn(); }
+                    if load_btn.clicked() { self.action_open_btn(); }
+                    if save_btn.clicked() { self.action_save_btn(); }
                 });
             });
             ui.add_space(10.);
@@ -139,6 +119,51 @@ impl CardData {
             })
         });
     }
+
+    fn action_save_btn(&self) {
+        let task = rfd::AsyncFileDialog::new()
+                        .set_directory("~")
+                        .save_file();
+
+        let message_sender = self.message_channel.0.clone();
+
+        execute(async move {
+            let file = task.await;
+
+            if let Some(file) = file {
+                let file_path = file.path().to_path_buf();
+                message_sender.send(Message::SaveFileDialog(file_path)).ok();
+            }
+        });
+    }
+
+    fn action_open_btn(&self) {
+        let task = rfd::AsyncFileDialog::new()
+                        .add_filter("Toml Files", &["toml"])
+                        .set_directory("~")
+                        .pick_file();
+        
+        let message_sender = self.message_channel.0.clone();
+
+        execute(async move {
+            let file = task.await;
+
+            if let Some(file) = file {
+                let file_path = file.path().to_path_buf();
+                message_sender.send(Message::OpenFileDialog(file_path)).ok();
+            }
+        });
+    }
+
+    fn action_close_btn(&mut self) {
+        self.current_recipe = None;
+    }
+
+    fn action_refresh_btn(&self) {}
+
+    fn action_add_btn(&self) {}
+    fn action_edit_btn(&self) {}
+    fn action_delete_btn(&self) {}
 }
 
 pub fn execute<F: std::future::Future<Output = ()> + Send + 'static>(f: F) {
