@@ -9,7 +9,7 @@ pub enum Message {
 }
 
 pub struct CardData {
-    current_collection: recipeapi::RecipeCollection,
+    pub current_collection: recipeapi::RecipeCollection,
     current_recipe: Option<recipeapi::Recipe>,
     pub message_channel: (
         std::sync::mpsc::Sender<Message>,
@@ -24,8 +24,6 @@ impl CardData {
             current_recipe: None,
             message_channel: std::sync::mpsc::channel(),
         };
-        let test = recipeapi::Recipe::recipe_builder("Recipe 1".to_string(), 1, "Description 1".to_string(), std::collections::HashMap::new());
-        hello.current_collection.add_recipe(test);
         hello
     }  
 
@@ -33,11 +31,20 @@ impl CardData {
         if self.current_recipe.is_none() {
             ui.add(Label::new("Start by selecting a recipe to show the detailed view").text_style(TextStyle::Heading));
         } else {
-            ui.add(Label::new(format!("{}", self.current_recipe.as_ref().unwrap().name())).text_style(TextStyle::Heading));
+            ui.add(Label::new(format!("{}", self.current_recipe.as_ref().unwrap().name())).text_style(TextStyle::Heading).underline().heading().strong());
+            ui.add_space(PADDING);
+            ui.add(Separator::default());
+            ui.add_space(PADDING);
+            ui.add(Label::new(format!("Approximate time required: {} minutes", self.current_recipe.as_ref().unwrap().minutes())).italics());
+            ui.add_space(PADDING);
+            ui.add(Label::new(format!("{}", self.current_recipe.as_ref().unwrap().description())).monospace());
+            ui.add_space(PADDING);
+            
+
         }
     }
 
-    pub fn render_recipe_cards(&self, ui: &mut eframe::egui::Ui) {
+    pub fn render_recipe_cards(&mut self, ui: &mut eframe::egui::Ui) {
         for a in self.current_collection.recipes() {
             ui.add_space(PADDING);
             ui.with_layout(Layout::top_down(egui::Align::Min), |ui| {
@@ -46,7 +53,9 @@ impl CardData {
             });
             // Show Button
             ui.with_layout(Layout::top_down(egui::Align::Max), |ui| {
-                let _show_btn = ui.add(Button::new("SELECT").text_style(egui::TextStyle::Button).frame(true).text_color(Color32::from_rgb(0, 190, 220)));
+                let show_btn = ui.add(Button::new("SELECT").text_style(egui::TextStyle::Button).frame(true).text_color(Color32::from_rgb(0, 190, 220)));
+
+                if show_btn.clicked() { self.current_recipe = Some(a.clone()); }
             });
             ui.add_space(PADDING);
             ui.add(Separator::default());
@@ -86,13 +95,12 @@ impl CardData {
                 // controls
                 ui.with_layout(Layout::right_to_left(), |ui| {
                     let close_btn = ui.add(Button::new("❌").text_style(egui::TextStyle::Body));
-                    //refactor refresh to "create" to create new collection
-                    let refresh_btn = ui.add(Button::new("🔄").text_style(egui::TextStyle::Body));
+                    let create_btn = ui.add(Button::new("📦").text_style(egui::TextStyle::Body));
                     let save_btn = ui.add(Button::new("💾").text_style(egui::TextStyle::Body));
                     let load_btn = ui.add(Button::new("📁").text_style(egui::TextStyle::Body));
                     
                     if close_btn.clicked() { self.action_close_btn(); }
-                    if refresh_btn.clicked() { self.action_refresh_btn(); }
+                    if create_btn.clicked() { self.action_create_btn(); }
                     if load_btn.clicked() { self.action_open_btn(); }
                     if save_btn.clicked() { self.action_save_btn(); }
                 });
@@ -159,7 +167,7 @@ impl CardData {
         self.current_recipe = None;
     }
 
-    fn action_refresh_btn(&self) {}
+    fn action_create_btn(&self) {}
 
     fn action_add_btn(&self) {}
     fn action_edit_btn(&self) {}

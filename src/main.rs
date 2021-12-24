@@ -1,19 +1,13 @@
 mod ui;
 
 use eframe::{
-    egui::{
-        CentralPanel, ScrollArea, Vec2, SidePanel,
-    },
+    egui::{CentralPanel, ScrollArea, Vec2, SidePanel},
     epi::App,
     run_native, NativeOptions,
 };
 use ui::CardData;
 
 impl App for CardData {
-    fn setup(&mut self, ctx: &eframe::egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>, _storage: Option<&dyn eframe::epi::Storage>) {
-        
-    }
-
     fn update(&mut self, ctx: &eframe::egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>) {
         //ctx.request_repaint();
 
@@ -22,9 +16,14 @@ impl App for CardData {
                 Ok(message) => {
                     if let ui::Message::OpenFileDialog(ref x) = message {
                         println!("Open File {}", x.to_string_lossy());
+                        self.current_collection = recipeapi::RecipeCollection::read_collection_from_file(&x.to_string_lossy());
                     }
                     if let ui::Message::SaveFileDialog(ref x) = message {
                         println!("Save File {}", x.to_string_lossy());
+                        match self.current_collection.save_to_file(&x.to_string_lossy()) {
+                            Ok(_) => println!("Successfully saved to file"),
+                            Err(_) => println!("Error saving to file {}", x.to_string_lossy()),
+                        }
                     }
                 }
                 Err(_) => {
@@ -34,6 +33,7 @@ impl App for CardData {
         }
 
         self.render_top_panel(ctx);
+        
         CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 SidePanel::left("Collection overview panel").resizable(false).min_width(280.).show(ctx, |ui| {
