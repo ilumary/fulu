@@ -11,7 +11,7 @@ pub struct RecipeCollection {
     recipes: Vec<Recipe>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Recipe {
     recipe_name: String,
     cooking_time: u32,
@@ -50,11 +50,10 @@ impl RecipeCollection {
     }
 
     pub fn create_new_collection(name: String) -> Self {
-        let rc = RecipeCollection {
+        RecipeCollection {
             collection_name: name,
             recipes: Vec::new(),
-        };
-        rc
+        }
     }
 
     pub fn read_collection_from_file(file: &str) -> Self {
@@ -90,13 +89,12 @@ impl Recipe {
     pub fn description_mut(&mut self) -> &mut String { &mut self.description }
 
     pub fn recipe_builder(name: String, pminutes: u32, pdescription: String, pingredients: std::collections::HashMap<String, String>) -> Self {
-        let rec = Recipe {
+        Recipe {
             recipe_name: name,
             cooking_time: pminutes,
             description: pdescription,
             ingredients: pingredients,
-        };
-        rec
+        }
     }
 
     pub fn add_ingredient(&mut self, ingredient_name: String, ingredient_amount: String) {
